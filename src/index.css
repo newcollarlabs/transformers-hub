@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display-hero: "Anton", sans-serif;
+  --font-headline-lg: "Anton", sans-serif;
+  --font-body: "Lexend", sans-serif;
+
+  --color-primary-red: #ba002c;
+  --color-secondary-blue: #0056c5;
+  --color-tertiary-green: #006b33;
+  --color-ink-black: #1b1b1c;
+  
+  --color-surface: #fcf8f9;
+  --color-surface-dim: #dcd9da;
+  --color-surface-container: #f0edee;
+
+  --shadow-hard: 4px 4px 0px 0px #1b1b1c;
+  --shadow-hard-lg: 8px 8px 0px 0px #1b1b1c;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-ink-black font-body;
+  }
+}
+
+@layer components {
+  .comic-panel {
+    @apply border-4 border-ink-black bg-white shadow-hard;
+  }
+  
+  .comic-button {
+    @apply border-4 border-ink-black shadow-hard active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase font-headline-lg flex items-center justify-center gap-2 px-6 py-2;
+  }
+
+  .halftone {
+    background-image: radial-gradient(rgba(27, 27, 28, 0.1) 10%, transparent 11%);
+    background-size: 10px 10px;
+  }
+  
+  .action-lines {
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 20px);
+  }
+}

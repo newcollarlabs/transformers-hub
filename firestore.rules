@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidCachedImage(data) {
+      return data.keys().hasAll(['botId', 'url', 'prompt', 'createdAt']) &&
+             data.keys().size() == 4 &&
+             data.botId is string &&
+             data.url is string &&
+             data.url.size() <= 2048 &&
+             data.prompt is string &&
+             data.prompt.size() <= 1024 &&
+             data.createdAt == request.time;
+    }
+
+    match /cached_images/{botId} {
+      allow get: if true; // Publicly readable
+      allow list: if false; // No bulk listing needed for client
+      allow create: if isSignedIn() && isValidId(botId) && isValidCachedImage(request.resource.data);
+      allow update: if false; // Images are immutable once cached
+      allow delete: if false;
+    }
+  }
+}

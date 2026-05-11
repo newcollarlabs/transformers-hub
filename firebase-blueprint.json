@@ -1,0 +1,22 @@
+{
+  "entities": {
+    "CachedImage": {
+      "title": "Cached Image",
+      "description": "Stores generated image URLs for Transformers to avoid re-generation.",
+      "type": "object",
+      "properties": {
+        "botId": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "prompt": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["botId", "url", "prompt", "createdAt"]
+    }
+  },
+  "firestore": {
+    "cached_images/{botId}": {
+      "schema": "CachedImage",
+      "description": "Cache for bot images"
+    }
+  }
+}
