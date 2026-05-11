@@ -5,19 +5,24 @@
 
 import { useState, useEffect } from 'react';
 import { UserProfile, TransformerBot } from './types';
+import { SEED_BOTS } from './constants';
 import Onboarding from './components/Onboarding';
 import Welcome from './components/Welcome';
 import Lore from './components/Lore';
 import MissionHub from './components/MissionHub';
 import BotDetail from './components/BotDetail';
 import BattleMode from './components/BattleMode';
+import InstallApp from './components/InstallApp';
 import Navigation from './components/Navigation';
 import TopBar from './components/TopBar';
 import SideMenu from './components/SideMenu';
+import Footer from './components/Footer';
+import { usePWAInstall } from './hooks/usePWAInstall';
 
-type Screen = 'onboarding' | 'welcome' | 'lore' | 'bots' | 'detail' | 'battle' | 'settings';
+type Screen = 'onboarding' | 'welcome' | 'lore' | 'bots' | 'detail' | 'battle' | 'settings' | 'install';
 
 export default function App() {
+  const { isStandalone } = usePWAInstall();
   const [profile, setProfile] = useState<UserProfile | null>(() => {
     const saved = localStorage.getItem('tf_profile');
     return saved ? JSON.parse(saved) : null;
@@ -34,11 +39,13 @@ export default function App() {
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(profile ? 'welcome' : 'onboarding');
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
+  const [selectedBotFilter, setSelectedBotFilter] = useState<string | null>(null);
   const [battleOpponents, setBattleOpponents] = useState<{ a: string; b: string } | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [initialLoreId, setInitialLoreId] = useState<string | null>(null);
   const [initialMissionSearch, setInitialMissionSearch] = useState<string>('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loreResetCounter, setLoreResetCounter] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -79,6 +86,7 @@ export default function App() {
 
   const navigateToBot = (id: string) => {
     setSelectedBotId(id);
+    setSelectedBotFilter(null);
     setCurrentScreen('detail');
   };
 
@@ -88,6 +96,34 @@ export default function App() {
   };
 
   const navigateToMissionHub = (searchQuery?: string) => {
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      
+      // Specific handling for Factions and Squads to jump to detail with carousel
+      const isAutobot = query === 'autobots' || query === 'autobot';
+      const isDecepticon = query === 'decepticons' || query === 'decepticon';
+      
+      let targetBotId: string | null = null;
+      
+      if (isAutobot) {
+        targetBotId = 'optimus-prime';
+      } else if (isDecepticon) {
+        targetBotId = 'megatron';
+      } else {
+        // Find first bot in category if it's a squad
+        const firstInCategory = SEED_BOTS.find(b => b.category.toLowerCase().includes(query));
+        if (firstInCategory) {
+          targetBotId = firstInCategory.id;
+        }
+      }
+
+      if (targetBotId) {
+        setSelectedBotId(targetBotId);
+        setSelectedBotFilter(searchQuery);
+        setCurrentScreen('detail');
+        return;
+      }
+    }
     setInitialMissionSearch(searchQuery || '');
     setCurrentScreen('bots');
   };
@@ -102,7 +138,7 @@ export default function App() {
         return <Welcome profile={profile} onStart={() => navigateToLore()} />;
       case 'lore':
         return <Lore
-          key={`lore-${initialLoreId}`}
+          key={`lore-${initialLoreId}-${loreResetCounter}`}
           initialLoreId={initialLoreId} 
           onDone={() => navigateToMissionHub()} 
           onViewBots={(query) => navigateToMissionHub(query)}
@@ -121,7 +157,10 @@ export default function App() {
       case 'detail':
         return <BotDetail 
           botId={selectedBotId!} 
+          initialFilter={selectedBotFilter || undefined}
           onBack={() => setCurrentScreen('bots')} 
+          onBotChange={(id) => setSelectedBotId(id)}
+          onFilterChange={(filter) => navigateToMissionHub(filter)}
           selectedVoiceURI={selectedVoiceURI}
           voiceSettings={voiceSettings}
           onCompare={(id) => {
@@ -131,9 +170,11 @@ export default function App() {
         />;
       case 'battle':
         return <BattleMode opponentA={battleOpponents?.a!} opponentB={battleOpponents?.b!} onBack={() => setCurrentScreen('bots')} />;
+      case 'install':
+        return <InstallApp />;
       case 'settings':
         return (
-          <div className="p-8 flex flex-col gap-8 items-center min-h-[80vh] pb-32">
+          <div className="p-8 flex flex-col gap-8 items-center min-h-[80vh] pb-10">
             <h2 className="text-3xl font-headline-lg text-primary-red transform -rotate-1">PARENTAL COMMAND CENTER</h2>
             
             {/* Voice Choosing Section */}
@@ -227,11 +268,19 @@ export default function App() {
             </div>
 
             <div className="flex flex-col gap-4 w-full max-w-md">
+              {!isStandalone && (
+                <button 
+                  onClick={() => setCurrentScreen('install')}
+                  className="comic-button bg-secondary-blue text-white w-full flex items-center justify-center gap-2"
+                >
+                  INSTALL APP
+                </button>
+              )}
               <button 
                 onClick={() => { localStorage.clear(); window.location.reload(); }}
                 className="comic-button bg-primary-red text-white w-full"
               >
-                WIPE BOT ARCHIVES
+                SIGN OUT
               </button>
             </div>
           </div>
@@ -256,32 +305,53 @@ export default function App() {
           <SideMenu 
             isOpen={isMenuOpen} 
             onClose={() => setIsMenuOpen(false)} 
-            onNavigate={(query) => navigateToMissionHub(query)}
+            onNavigate={(query) => {
+              if (query === 'install') {
+                setCurrentScreen('install');
+              } else {
+                navigateToMissionHub(query);
+              }
+            }}
           />
         </>
       )}
       
       <main className="relative z-10">
         {renderScreen()}
+        {profile && currentScreen !== 'onboarding' && <Footer />}
       </main>
 
       {profile && (
         <Navigation 
           currentScreen={currentScreen} 
-    onNavigate={(screen) => {
-      window.speechSynthesis.cancel();
-      if (currentScreen === screen || (screen === 'bots' && currentScreen === 'detail')) {
-        // Reset sub-states for the active or related group
-        if (screen === 'lore') setInitialLoreId(null);
-        if (screen === 'bots') {
-          setSelectedBotId(null);
-          setInitialMissionSearch('');
-          setCurrentScreen('bots');
-          return;
-        }
-      }
-      setCurrentScreen(screen as any);
-    }} 
+          onNavigate={(screen) => {
+            window.speechSynthesis.cancel();
+            
+            // Always reset lore to root when clicked from anywhere
+            if (screen === 'lore') {
+              setInitialLoreId(null);
+              setLoreResetCounter(c => c + 1);
+              setCurrentScreen('lore');
+              return;
+            }
+
+            if (screen === 'install') {
+              setCurrentScreen('install');
+              return;
+            }
+
+            if (currentScreen === screen || (screen === 'bots' && currentScreen === 'detail')) {
+              // Reset sub-states for the active or related group
+              if (screen === 'bots') {
+                setSelectedBotId(null);
+                setSelectedBotFilter(null);
+                setInitialMissionSearch('');
+                setCurrentScreen('bots');
+                return;
+              }
+            }
+            setCurrentScreen(screen as any);
+          }} 
         />
       )}
     </div>

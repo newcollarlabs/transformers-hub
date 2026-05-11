@@ -6,6 +6,11 @@ export function useCachedImage(botId: string, initialUrl: string, prompt: string
   const [isLoadedFromCache, setIsLoadedFromCache] = useState(false);
 
   useEffect(() => {
+    setImageUrl(initialUrl);
+    setIsLoadedFromCache(false);
+  }, [botId, initialUrl]);
+
+  useEffect(() => {
     let isMounted = true;
 
     async function loadCache() {

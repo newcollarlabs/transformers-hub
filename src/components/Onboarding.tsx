@@ -1,9 +1,7 @@
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { UserProfile } from '../types';
-import { Bolt, ShieldCheck, LogIn } from 'lucide-react';
+import { Bolt, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
-import { signInWithGoogle, auth } from '../lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
 
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
@@ -13,27 +11,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [name, setName] = useState('');
   const [age, setAge] = useState<number>(6);
   const [agreed, setAgreed] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [user, setUser] = useState<User | null>(auth.currentUser);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleSignIn = async () => {
-    setIsSigningIn(true);
-    try {
-      const newUser = await signInWithGoogle();
-      setUser(newUser);
-    } catch (error) {
-      console.error('Sign in failed:', error);
-    } finally {
-      setIsSigningIn(false);
-    }
-  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -57,34 +34,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         <div className="mt-4 bg-white border-4 border-ink-black p-3 relative shadow-hard">
           <div className="absolute -top-3 left-10 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-ink-black"></div>
           <p className="font-bold text-xs uppercase tracking-wider">
-            SET UP YOUR RECRUIT'S PROFILE AND AUTHENTICATE TO CACHE MISSION DATA!
+            SET UP YOUR RECRUIT'S PROFILE TO START THE MISSION!
           </p>
         </div>
       </motion.div>
 
       <div className="w-full max-w-md space-y-8">
-        {!user ? (
-          <div className="comic-panel p-6 rotate-1 bg-white flex flex-col items-center gap-4">
-            <p className="font-bold text-center text-sm uppercase">AUTHENTICATE TO SECURE THE ARCHIVE</p>
-            <button 
-              onClick={handleSignIn}
-              disabled={isSigningIn}
-              className="w-full h-14 bg-white border-4 border-ink-black flex items-center justify-center gap-3 font-bold hover:bg-gray-50 transition-all shadow-hard"
-            >
-              {isSigningIn ? 'COMMUNICATING...' : (
-                <>
-                  <LogIn size={20} /> SIGN IN WITH GOOGLE
-                </>
-              )}
-            </button>
-          </div>
-        ) : (
-          <div className="comic-panel p-4 -rotate-1 bg-tertiary-green/20 border-tertiary-green flex items-center justify-center gap-3">
-            <ShieldCheck className="text-tertiary-green" />
-            <p className="font-bold text-xs">COMM-LINK ESTABLISHED: {user.displayName}</p>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <div className="comic-panel p-6 rotate-1">
             <div className="bg-primary-red px-4 py-1 border-2 border-ink-black -mt-10 mb-4 inline-block shadow-hard">

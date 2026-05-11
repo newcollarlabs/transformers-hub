@@ -1,5 +1,6 @@
-import { Home, BookOpen, ToyBrick, Settings } from 'lucide-react';
+import { Home, BookOpen, Library, Download, Settings } from 'lucide-react';
 import { clsx } from 'clsx';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface NavigationProps {
   currentScreen: string;
@@ -7,12 +8,14 @@ interface NavigationProps {
 }
 
 export default function Navigation({ currentScreen, onNavigate }: NavigationProps) {
+  const { isStandalone } = usePWAInstall();
   const items = [
     { id: 'welcome', label: 'HOME', icon: Home },
     { id: 'lore', label: 'LORE', icon: BookOpen },
-    { id: 'bots', label: 'BOTS', icon: ToyBrick },
+    { id: 'bots', label: 'WIKI', icon: Library },
+    { id: 'install', label: 'INSTALL', icon: Download },
     { id: 'settings', label: 'SETTINGS', icon: Settings },
-  ];
+  ].filter(item => !(item.id === 'install' && isStandalone));
 
   return (
     <nav className="fixed bottom-0 left-0 w-full z-50 h-20 bg-white border-t-4 border-ink-black flex justify-around items-center px-2 pb-2 shadow-[0px_-4px_0px_0px_#1b1b1c]">

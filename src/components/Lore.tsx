@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LORE_DETAILS } from '../constants';
 import { Shield, Skull, ChevronRight, Play, Pause, Square, Users } from 'lucide-react';
@@ -18,6 +18,10 @@ interface LoreProps {
 
 export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceURI, voiceSettings }: LoreProps) {
   const [selectedId, setSelectedId] = useState<string | null>(initialLoreId || null);
+
+  useEffect(() => {
+    setSelectedId(initialLoreId || null);
+  }, [initialLoreId]);
 
   const selectedLore = LORE_DETAILS.find(l => l.id === selectedId);
 
@@ -43,7 +47,7 @@ export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceU
   }
 
   return (
-    <div className="p-5 flex flex-col gap-12 pb-32">
+    <div className="p-5 flex flex-col gap-12 pb-10">
       <div className="absolute inset-0 halftone opacity-5 pointer-events-none -z-10"></div>
 
       <section>
@@ -54,7 +58,7 @@ export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceU
           
           <div className="bg-white border-4 border-ink-black rounded-2xl p-4 mb-10 relative shadow-hard">
             <p className="text-xl font-bold leading-tight uppercase">
-              WHOA! Welcome to the Hero Hub! Ready to learn about the giant metal warriors from outer space? Each Transformer belongs to the faction of an Autobot or Decepticons. Further both Autobots and Decepticons can belong to one of the 5 Squads. Tap a Transformers Category to learn their secrets!
+              WHOA! Welcome to the Hero Hub! Ready to learn about the giant metal warriors from outer space? Each Transformer belongs to the faction of an Autobot or Decepticons. Further both Autobots and Decepticons belong to one of the 5 Squads. Tap a Transformers Category to learn their secrets!
             </p>
             <div className="absolute -bottom-6 left-10 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-ink-black"></div>
           </div>
@@ -66,7 +70,11 @@ export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceU
               className="bg-secondary-blue text-white border-4 border-ink-black p-5 shadow-hard-lg rotate-1 text-left active:scale-95 transition-transform"
             >
               <div className="flex items-center gap-3 mb-4">
-                <Shield size={40} fill="white" />
+                <img 
+                  src="https://image.pollinations.ai/prompt/Transformers%20Autobot%20logo%20clean%20red%20emblem%20vector%20style%20white%20background%20comic%20book%20art?width=100&height=100&nologo=true" 
+                  alt="Autobot Icon" 
+                  className="w-12 h-12 object-contain border-2 border-white rounded-lg bg-white"
+                />
                 <h3 className="font-headline-lg text-3xl italic">AUTOBOTS</h3>
               </div>
               <p className="font-bold text-sm mb-4 uppercase">THE GOOD GUYS! They protect the Earth from bullies!</p>
@@ -87,7 +95,11 @@ export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceU
               className="bg-ink-black text-white border-4 border-ink-black p-5 shadow-hard-lg -rotate-1 text-left active:scale-95 transition-transform"
             >
               <div className="flex items-center gap-3 mb-4">
-                <Skull size={40} fill="white" />
+                <img 
+                  src="https://image.pollinations.ai/prompt/Transformers%20Decepticon%20logo%20clean%20purple%20emblem%20vector%20style%20white%20background%20comic%20book%20art?width=100&height=100&nologo=true" 
+                  alt="Decepticon Icon" 
+                  className="w-12 h-12 object-contain border-2 border-white rounded-lg bg-white"
+                />
                 <h3 className="font-headline-lg text-3xl italic text-primary-red">DECEPTICONS</h3>
               </div>
               <p className="font-bold text-sm mb-4 uppercase">THE BAD GUYS! They want to take over everything!</p>
@@ -102,18 +114,22 @@ export default function Lore({ initialLoreId, onDone, onViewBots, selectedVoiceU
               </div>
             </button>
 
-            {/* Bot Squads */}
+            {/* Transformer Squads */}
             <button 
               onClick={() => setSelectedId('squads')}
               className="bg-tertiary-green text-white border-4 border-ink-black p-5 shadow-hard-lg rotate-1 text-left active:scale-95 transition-transform flex flex-col h-full"
             >
               <div className="flex items-center gap-3 mb-4">
-                <Users size={40} fill="white" />
-                <h3 className="font-headline-lg text-3xl italic">BOT SQUADS</h3>
+                <img 
+                  src="https://image.pollinations.ai/prompt/Transformers%20group%20emblem%20green%20three%20robot%20heads%20vector%20style%20white%20background%20comic%20book%20art?width=100&height=100&nologo=true" 
+                  alt="Squads Icon" 
+                  className="w-12 h-12 object-contain border-2 border-white rounded-lg bg-white"
+                />
+                <h3 className="font-headline-lg text-3xl italic">TRANSFORMER SQUADS</h3>
               </div>
               <p className="font-bold text-sm mb-4 uppercase">SPECIALIZED TEAMS! United together, they combine their unique skills to conquer any mission!</p>
               <div className="mt-auto aspect-video border-2 border-ink-black overflow-hidden shadow-hard">
-                <img src={LORE_DETAILS.find(l => l.id === 'Combiners')?.imageUrl} alt="Bot Squads" className="w-full h-full object-cover" />
+                <img src={LORE_DETAILS.find(l => l.id === 'Combiners')?.imageUrl} alt="Transformer squads" className="w-full h-full object-cover" />
               </div>
             </button>
           </div>
@@ -127,12 +143,12 @@ function SquadsListView({ onBack, onSelectSquad }: { onBack: () => void, onSelec
   const squads = LORE_DETAILS.filter(l => !['Autobot', 'Decepticon'].includes(l.id));
 
   return (
-    <div className="p-5 flex flex-col gap-12 pb-32 min-h-screen">
+    <div className="p-5 flex flex-col gap-12 pb-10 min-h-screen">
       <div className="absolute inset-0 halftone opacity-5 pointer-events-none -z-10"></div>
       
       <div className="flex items-center gap-4 mt-4">
         <div className="bg-tertiary-green text-white px-4 py-2 border-4 border-ink-black inline-block transform rotate-1 shadow-hard">
-          <h2 className="font-headline-lg text-2xl md:text-3xl uppercase italic">BOT SQUADS</h2>
+          <h2 className="font-headline-lg text-2xl md:text-3xl uppercase italic">TRANSFORMER SQUADS</h2>
         </div>
       </div>
 
@@ -183,8 +199,10 @@ function LoreDetailView({ lore, onBack, onViewBots, selectedVoiceURI, voiceSetti
     voiceSettings
   );
 
+  let wordOffset = 0;
+
   return (
-    <div className="min-h-screen bg-surface-dim pt-4 pb-32 flex flex-col">
+    <div className="min-h-screen bg-surface-dim pt-4 pb-10 flex flex-col">
       {/* Back button removed as requested */}
       <article className="mx-5 grow flex flex-col">
         <div className={clsx("comic-panel p-6 border-b-8 border-r-8 relative overflow-hidden", lore.accentColor)}>
@@ -203,16 +221,19 @@ function LoreDetailView({ lore, onBack, onViewBots, selectedVoiceURI, voiceSetti
             alt={lore.title} 
             className="w-full aspect-[4/3] object-cover" 
           />
-          <div className="absolute bottom-4 right-4 flex items-center gap-2 z-20">
+        </div>
+
+        <div className="mt-8 comic-panel p-6 bg-white space-y-6 relative">
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
             {isReading && (
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
                   handleStop();
                 }}
-                className="w-16 h-16 rounded-full border-4 border-ink-black shadow-hard flex items-center justify-center transition-all bg-white text-ink-black hover:bg-gray-100"
+                className="w-12 h-12 rounded-full border-2 border-ink-black shadow-hard flex items-center justify-center transition-all bg-white text-ink-black hover:bg-gray-100"
               >
-                <Square size={26} fill="currentColor" />
+                <Square size={20} fill="currentColor" />
               </button>
             )}
             <button 
@@ -221,33 +242,41 @@ function LoreDetailView({ lore, onBack, onViewBots, selectedVoiceURI, voiceSetti
                 handleSpeak();
               }}
               className={clsx(
-                "w-16 h-16 rounded-full border-4 border-ink-black shadow-hard flex items-center justify-center transition-all",
+                "w-12 h-12 rounded-full border-2 border-ink-black shadow-hard flex items-center justify-center transition-all",
                 isReading && !isPaused ? "bg-primary-red text-white animate-pulse" : "bg-white text-primary-red hover:bg-red-50"
               )}
             >
-              {isReading && !isPaused ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-1" />}
+              {isReading && !isPaused ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-0.5" />}
             </button>
           </div>
-        </div>
+          {lore.paragraphs.map((paragraph, pIdx) => {
+            const paraWordsCount = Array.from(paragraph.matchAll(/\S+/g)).length;
+            const startIndex = wordOffset;
+            wordOffset += paraWordsCount;
 
-        <div className="mt-8 comic-panel p-6 bg-white space-y-6">
-          <div className="flex flex-wrap gap-x-1.5 gap-y-1">
-            {wordsWithIndices.map((w, idx) => (
-              <span 
-                key={idx}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  jumpToWord(idx);
-                }}
-                className={clsx(
-                  "text-lg font-bold transition-all px-0.5 rounded cursor-pointer hover:bg-yellow-200",
-                  idx === activeWordIndex ? "bg-yellow-400 text-ink-black scale-110 shadow-sm" : "text-ink-black"
-                )}
-              >
-                {w.word}
-              </span>
-            ))}
-          </div>
+            return (
+              <p key={pIdx} className="flex flex-wrap gap-x-1.5 gap-y-1">
+                {wordsWithIndices.slice(startIndex, startIndex + paraWordsCount).map((w, idx) => {
+                  const globalIdx = startIndex + idx;
+                  return (
+                    <span 
+                      key={globalIdx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        jumpToWord(globalIdx);
+                      }}
+                      className={clsx(
+                        "text-lg font-bold transition-all px-0.5 rounded cursor-pointer hover:bg-yellow-200",
+                        globalIdx === activeWordIndex ? "bg-yellow-400 text-ink-black scale-110 shadow-sm" : "text-ink-black"
+                      )}
+                    >
+                      {w.word}
+                    </span>
+                  );
+                })}
+              </p>
+            );
+          })}
         </div>
         
         <div className="mt-8">

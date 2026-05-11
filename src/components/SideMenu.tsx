@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronRight, Shield, Zap, LayoutGrid, Layers, Merge, Radio, Boxes, LogOut, RefreshCcw } from 'lucide-react';
+import { X, ChevronRight, Shield, Zap, LayoutGrid, Layers, Merge, Radio, Boxes, LogOut, RefreshCcw, Download } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { signOut } from 'firebase/auth';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface SideMenuProps {
 }
 
 export default function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps) {
+  const { isStandalone } = usePWAInstall();
   const handleReset = async () => {
     if (confirm('Are you sure you want to reset everything and log out?')) {
       await signOut(auth);
@@ -121,12 +123,27 @@ export default function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps)
                 <p className="text-[10px] font-bold text-ink-black/40 uppercase tracking-widest px-2 mb-3">
                   System Commands
                 </p>
+                {!isStandalone && (
+                  <button
+                    onClick={() => {
+                      onNavigate('install');
+                      onClose();
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border-2 border-transparent hover:border-ink-black hover:bg-surface-container transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Download className="text-secondary-blue" size={18} />
+                      <span className="font-bold text-ink-black uppercase">Install App</span>
+                    </div>
+                    <ChevronRight size={16} className="text-ink-black/20 group-hover:text-ink-black group-hover:translate-x-1 transition-all" />
+                  </button>
+                )}
                 <button
                   onClick={handleReset}
                   className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-transparent hover:border-primary-red hover:bg-red-50 text-primary-red transition-all font-bold"
                 >
                   <RefreshCcw size={18} />
-                  <span>RESET ARCHIVES</span>
+                  <span>SIGN OUT</span>
                 </button>
               </div>
             </div>
