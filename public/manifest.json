@@ -1,0 +1,21 @@
+{
+  "name": "Transformers 4 Kids",
+  "short_name": "T4K",
+  "description": "An interactive Transformers adventure for kids featuring bot discovery, lore, and a heroic narrator.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#E61D23",
+  "icons": [
+    {
+      "src": "https://image.pollinations.ai/prompt/Transformers%20robot%20face%20kids%20app%20icon%20vibrant%20red%20blue%20bold%20comic%20book%20vector%20white%20background?width=192&height=192&nologo=true",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://image.pollinations.ai/prompt/Transformers%20robot%20face%20kids%20app%20icon%20vibrant%20red%20blue%20bold%20comic%20book%20vector%20white%20background?width=512&height=512&nologo=true",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
