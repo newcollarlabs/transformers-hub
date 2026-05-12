@@ -13,17 +13,17 @@ export default function InstallApp() {
       <div className="w-full max-w-md bg-white border-4 border-ink-black shadow-hard-lg rounded-3xl overflow-hidden mb-8">
         <div className="p-6 flex gap-5 items-start">
           {/* App Icon */}
-          <div className="w-24 h-24 bg-primary-red border-4 border-ink-black rounded-[22%] flex items-center justify-center shrink-0 shadow-hard transform -rotate-3 overflow-hidden">
+          <div className="w-24 h-24 bg-white border-4 border-ink-black rounded-[22%] flex items-center justify-center shrink-0 shadow-hard transform -rotate-3 overflow-hidden">
              <img 
-              src="https://image.pollinations.ai/prompt/Transformers%20Autobot%20logo%20clean%20red%20emblem%20vector%20style%20white%20background%20comic%20book%20art?width=200&height=200&nologo=true" 
-              alt="Hero Hub Icon" 
-              className="w-16 h-16 object-contain"
+              src="https://image.pollinations.ai/prompt/Transformers%20robot%20face%20kids%20app%20icon%20vibrant%20red%20blue%20bold%20comic%20book%20vector%20white%20background?width=200&height=200&nologo=true" 
+              alt="Transformers 4 Kids Icon" 
+              className="w-20 h-20 object-contain"
             />
           </div>
           
           <div className="flex flex-col grow pt-1">
-            <h2 className="font-headline-lg text-2xl uppercase italic leading-tight text-ink-black">HERO HUB</h2>
-            <p className="text-secondary-blue font-bold text-xs uppercase tracking-wider mb-2">Transformers Lore</p>
+            <h2 className="font-headline-lg text-2xl uppercase italic leading-tight text-ink-black">TRANSFORMERS 4 KIDS</h2>
+            <p className="text-secondary-blue font-bold text-xs uppercase tracking-wider mb-2">The Heroic Guide</p>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star key={s} size={12} className="fill-[#FFDD00] text-[#FFDD00]" />
@@ -61,9 +61,9 @@ export default function InstallApp() {
             <div className="bg-surface-container p-4 rounded-xl border-2 border-dashed border-ink-black/20 flex gap-3">
               <Info className="text-secondary-blue shrink-0" size={20} />
               <div className="flex flex-col gap-1">
-                <p className="text-[11px] font-bold text-ink-black uppercase">How to Install</p>
-                <p className="text-[10px] font-medium text-ink-black/60 leading-tight">
-                  Tap your browser's <span className="font-bold text-ink-black">Menu</span> or <span className="font-bold text-ink-black">Share</span> icon, then select <span className="font-bold text-ink-black">"Add to Home Screen"</span>.
+                <p className="text-sm font-black text-ink-black uppercase mb-1">How to Install</p>
+                <p className="text-xs font-bold text-ink-black/70 leading-relaxed">
+                  Tap your browser's <span className="underline decoration-2 decoration-secondary-blue underline-offset-2">Menu</span> or <span className="underline decoration-2 decoration-secondary-blue underline-offset-2">Share</span> icon, then select <span className="bg-secondary-blue text-white px-1.5 py-0.5 rounded italic">"Add to Home Screen"</span>.
                 </p>
               </div>
             </div>
