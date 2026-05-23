@@ -193,10 +193,8 @@ function LoreDetailView({ lore, onBack, onViewBots, selectedVoiceURI, voiceSetti
   voiceSettings: { pitch: number, rate: number }
 }) {
   const fullText = lore.paragraphs.join(' ');
-  const { isReading, isPaused, activeWordIndex, wordsWithIndices, handleSpeak, handleStop, jumpToWord } = useSpeechSync(
-    fullText,
-    selectedVoiceURI,
-    voiceSettings
+  const { isReading, isPaused, activeSentenceRange, wordsWithIndices, handleSpeak, handleStop, jumpToWord } = useSpeechSync(
+    fullText
   );
 
   let wordOffset = 0;
@@ -267,7 +265,9 @@ function LoreDetailView({ lore, onBack, onViewBots, selectedVoiceURI, voiceSetti
                       }}
                       className={clsx(
                         "text-lg font-bold transition-all px-0.5 rounded cursor-pointer hover:bg-yellow-200",
-                        globalIdx === activeWordIndex ? "bg-yellow-400 text-ink-black scale-110 shadow-sm" : "text-ink-black"
+                        activeSentenceRange && globalIdx >= activeSentenceRange.start && globalIdx <= activeSentenceRange.end
+                          ? "bg-yellow-300 text-ink-black shadow-sm" 
+                          : "text-ink-black"
                       )}
                     >
                       {w.word}

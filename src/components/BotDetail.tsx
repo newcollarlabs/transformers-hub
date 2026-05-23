@@ -58,10 +58,8 @@ export default function BotDetail({ botId: initialBotId, initialFilter, onBack, 
   const { imageUrl } = useCachedImage(bot.id, bot.imageUrl, bot.identifier);
 
   const fullText = bot.description.join('\n\n');
-  const { isReading, isPaused, activeWordIndex, wordsWithIndices, handleSpeak, handleStop, jumpToWord } = useSpeechSync(
-    fullText,
-    selectedVoiceURI,
-    voiceSettings
+  const { isReading, isPaused, activeSentenceRange, wordsWithIndices, handleSpeak, handleStop, jumpToWord } = useSpeechSync(
+    fullText
   );
 
   let wordOffset = 0;
@@ -166,7 +164,9 @@ export default function BotDetail({ botId: initialBotId, initialFilter, onBack, 
                       onClick={() => jumpToWord(globalIdx)}
                       className={clsx(
                         "transition-all px-1 rounded block cursor-pointer hover:bg-yellow-200",
-                        globalIdx === activeWordIndex ? "bg-yellow-400 text-ink-black scale-110 shadow-sm" : "bg-transparent text-ink-black shrink-0"
+                        activeSentenceRange && globalIdx >= activeSentenceRange.start && globalIdx <= activeSentenceRange.end
+                          ? "bg-yellow-300 text-ink-black shadow-sm" 
+                          : "bg-transparent text-ink-black shrink-0"
                       )}
                     >
                       {w.word}
