@@ -49,7 +49,9 @@ export default function MissionHub({
   const scrollToLetter = (letter: string) => {
     const element = document.getElementById(`section-${letter}`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Calculate precise pixel offset: element top location relative to page, minus combined heights of headers (120px)
+      const topOffset = element.getBoundingClientRect().top + window.pageYOffset - 120;
+      window.scrollTo({ top: topOffset, behavior: 'smooth' });
     }
   };
 
