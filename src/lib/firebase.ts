@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -8,6 +8,21 @@ export const auth = getAuth(app);
 export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId);
 
 const googleProvider = new GoogleAuthProvider();
+
+
+export const authReady: Promise<void> = new Promise((resolve) => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      unsub();
+      resolve();
+    } else {
+      signInAnonymously(auth).catch((err) => {
+        console.warn('Anonymous sign-in failed — image caching will be skipped:', err);
+        resolve();
+      });
+    }
+  });
+});
 
 export const signInWithGoogle = async () => {
   try {

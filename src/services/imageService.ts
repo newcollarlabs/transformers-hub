@@ -1,18 +1,18 @@
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, authReady } from '../lib/firebase';
 
 const CACHE_COLLECTION = 'cached_images';
 
 export async function getCachedImageUrl(botId: string, prompt: string): Promise<string> {
   const docRef = doc(db, CACHE_COLLECTION, botId);
-  
+
   try {
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       return docSnap.data().url;
     }
-    
+
     // If not in cache, the caller should handle generation and then call cacheImageUrl
     // This function just returns null if not found
     return '';
@@ -25,12 +25,9 @@ export async function getCachedImageUrl(botId: string, prompt: string): Promise<
 }
 
 export async function cacheImageUrl(botId: string, url: string, prompt: string): Promise<void> {
-  // Only cache if user is signed in (required by rules for writes)
-  // Or handle anonymous if that's enabled (but we stick to rules)
-  if (!auth.currentUser) return;
-
+  await authReady;
   const docRef = doc(db, CACHE_COLLECTION, botId);
-  
+
   try {
     await setDoc(docRef, {
       botId,

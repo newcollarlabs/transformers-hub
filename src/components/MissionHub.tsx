@@ -112,7 +112,7 @@ export default function MissionHub({ onSelectBot }: MissionHubProps) {
                   <button
                     key={bot.id}
                     onClick={() => onSelectBot(bot.id)}
-                    className="flex h-24 bg-white border-4 border-ink-black shadow-hard hover:translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all overflow-hidden group text-left"
+                    className="flex h-24 bg-white border-4 border-ink-black shadow-hard active:scale-98 transition-all overflow-hidden group text-left"
                   >
                     {/* Thumbnail */}
                     <div className="w-24 h-full border-r-4 border-ink-black overflow-hidden bg-surface-dim shrink-0 relative">
@@ -121,7 +121,7 @@ export default function MissionHub({ onSelectBot }: MissionHubProps) {
                         initialUrl={bot.imageUrl}
                         prompt={bot.identifier}
                         alt={bot.name}
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all scale-110 group-hover:scale-125"
+                        className="w-full h-full object-cover scale-110 transition-all"
                       />
                     </div>
                     
