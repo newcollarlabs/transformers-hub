@@ -41,7 +41,7 @@ export default function BattleMode({ opponentA, opponentB, onBack }: BattleModeP
 
         <div className="flex-1 flex flex-col items-center gap-6">
           <div className="comic-panel rotate-1 w-full aspect-square overflow-hidden bg-ink-black">
-            <img src={botB.imageUrl} alt={botB.name} className="w-full h-full object-cover grayscale brightness-75" />
+            <img src={botB.imageUrl} alt={botB.name} className="w-full h-full object-cover" />
           </div>
           <div className="bg-ink-black text-white px-6 py-2 border-4 border-ink-black shadow-hard transform -rotate-2">
              <h3 className="font-headline-lg text-2xl uppercase text-primary-red">{botB.name}</h3>

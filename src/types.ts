@@ -1,5 +1,5 @@
 export type Faction = 'Autobot' | 'Decepticon';
-export type Category = 'Elite Core' | 'Combiners' | 'Multi-Changers' | 'Bonded Units' | 'Titans';
+export type Category = 'Elite Core' | 'Combiners' | 'Multi-Changers' | 'Bonded Units' | 'Titans' | 'Seekers' | 'Maximals' | 'Predacons';
 
 export interface TransformerBot {
   id: string;

@@ -13,8 +13,12 @@ interface MissionHubProps {
   voiceSettings?: { pitch: number; rate: number };
 }
 
-export default function MissionHub({ onSelectBot }: MissionHubProps) {
-  const [search, setSearch] = useState('');
+export default function MissionHub({ 
+  onSelectBot,
+  initialSearch = '',
+  onTagClick
+}: MissionHubProps) {
+  const [search, setSearch] = useState(initialSearch);
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   const filteredBots = useMemo(() => {
@@ -72,7 +76,7 @@ export default function MissionHub({ onSelectBot }: MissionHubProps) {
       </div>
 
       {/* Alphabet Index */}
-      <div className="sticky top-0 z-40 bg-surface-dim py-3 -mx-4 px-4 border-b-2 border-ink-black mb-8 shadow-sm">
+      <div className="sticky top-14 z-40 bg-surface-dim py-3 -mx-4 px-4 border-b-2 border-ink-black mb-8 shadow-sm">
         <div className="flex gap-1 justify-between max-w-full overflow-x-auto pb-1 scrollbar-hide">
           {alphabet.map(letter => {
             const hasBots = groupedBots[letter];
@@ -84,7 +88,7 @@ export default function MissionHub({ onSelectBot }: MissionHubProps) {
                 className={clsx(
                   "flex-1 min-w-[24px] h-8 flex items-center justify-center font-black text-[10px] border-2 border-ink-black transition-all",
                   hasBots 
-                    ? "bg-white text-ink-black hover:bg-primary-red hover:text-white" 
+                    ? "bg-white text-ink-black hover:bg-primary-red hover:text-white cursor-pointer active:scale-95" 
                     : "bg-surface-container text-ink-black/10 cursor-not-allowed"
                 )}
               >
@@ -99,7 +103,7 @@ export default function MissionHub({ onSelectBot }: MissionHubProps) {
       <div className="relative z-10 space-y-12">
         {activeLetters.length > 0 ? (
           activeLetters.map(letter => (
-            <div key={letter} id={`section-${letter}`} className="scroll-mt-24">
+            <div key={letter} id={`section-${letter}`} className="scroll-mt-32">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-ink-black text-white flex items-center justify-center font-headline-lg text-2xl italic skew-x-[-10deg] shadow-hard shrink-0">
                   {letter}

@@ -1,6 +1,6 @@
 {
-  "name": "Transformers 4 Kids",
-  "short_name": "T4K",
+  "name": "Transformers: Hero Hub",
+  "short_name": "Hero Hub",
   "description": "An interactive Transformers adventure for kids featuring bot discovery, lore, and a heroic narrator.",
   "start_url": "/",
   "display": "standalone",

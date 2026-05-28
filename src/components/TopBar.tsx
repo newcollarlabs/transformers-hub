@@ -17,7 +17,7 @@ export default function TopBar({ currentScreen, onSearch, onMenuClick }: TopBarP
           <Menu size={28} />
         </button>
         <h1 className="text-white font-headline-lg text-2xl uppercase italic tracking-tighter">
-          TRANSFORMERS 4 KIDS
+          TRANSFORMERS: HERO HUB
         </h1>
       </div>
       

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getCachedImageUrl, cacheImageUrl } from '../services/imageService';
+import { getCachedImageUrl } from '../services/imageService';
 
 export function useCachedImage(botId: string, initialUrl: string, prompt: string) {
   const [imageUrl, setImageUrl] = useState(initialUrl);
@@ -20,12 +20,6 @@ export function useCachedImage(botId: string, initialUrl: string, prompt: string
       if (cached) {
         setImageUrl(cached);
         setIsLoadedFromCache(true);
-      } else {
-        // If no cache, we should save the initial one to cache
-        // provided we have a valid initial URL
-        if (initialUrl) {
-          await cacheImageUrl(botId, initialUrl, prompt);
-        }
       }
     }
 

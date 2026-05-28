@@ -16,13 +16,13 @@ export default function InstallApp() {
           <div className="w-24 h-24 bg-white border-4 border-ink-black rounded-[22%] flex items-center justify-center shrink-0 shadow-hard transform -rotate-3 overflow-hidden">
              <img 
               src="https://image.pollinations.ai/prompt/Transformers%20robot%20face%20kids%20app%20icon%20vibrant%20red%20blue%20bold%20comic%20book%20vector%20white%20background?width=200&height=200&nologo=true" 
-              alt="Transformers 4 Kids Icon" 
+              alt="Transformers: Hero Hub Icon" 
               className="w-20 h-20 object-contain"
             />
           </div>
           
           <div className="flex flex-col grow pt-1">
-            <h2 className="font-headline-lg text-2xl uppercase italic leading-tight text-ink-black">TRANSFORMERS 4 KIDS</h2>
+            <h2 className="font-headline-lg text-2xl uppercase italic leading-tight text-ink-black">TRANSFORMERS: HERO HUB</h2>
             <p className="text-secondary-blue font-bold text-xs uppercase tracking-wider mb-2">The Heroic Guide</p>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (

@@ -20,7 +20,7 @@ service cloud.firestore {
              data.keys().size() == 4 &&
              data.botId is string &&
              data.url is string &&
-             data.url.size() <= 2048 &&
+             data.url.size() <= 1048576 && // Allow up to 1MB for base64 encoded images
              data.prompt is string &&
              data.prompt.size() <= 1024 &&
              data.createdAt == request.time;

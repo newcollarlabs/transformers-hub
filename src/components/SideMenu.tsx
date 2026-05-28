@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronRight, Shield, Zap, LayoutGrid, Layers, Merge, Radio, Boxes, LogOut, RefreshCcw, Download } from 'lucide-react';
+import { X, ChevronRight, Shield, Zap, LayoutGrid, Layers, Merge, Radio, Boxes, LogOut, RefreshCcw, Download, Plane, PawPrint, Skull, Building } from 'lucide-react';
 import { auth } from '../lib/firebase';
 import { signOut } from 'firebase/auth';
 import { usePWAInstall } from '../hooks/usePWAInstall';
@@ -28,9 +28,11 @@ export default function SideMenu({ isOpen, onClose, onNavigate }: SideMenuProps)
   const squadItems = [
     { label: 'Core Squad', icon: Layers, query: 'Elite Core' },
     { label: 'Combiner Squad', icon: Merge, query: 'Combiners' },
-    { label: 'Tri-Squad', icon: LayoutGrid, query: 'Multi-Changers' },
     { label: 'Bonded Squad', icon: Radio, query: 'Bonded Units' },
-    { label: 'Titan Squad', icon: Radio, query: 'Titans' },
+    { label: 'Titan Squad', icon: Building, query: 'Titans' },
+    { label: 'Seeker Squad', icon: Plane, query: 'Seekers' },
+    { label: 'Maximal Squad', icon: PawPrint, query: 'Maximals' },
+    { label: 'Predacon Squad', icon: Skull, query: 'Predacons' },
   ];
 
   return (

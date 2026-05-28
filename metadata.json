@@ -1,8 +1,10 @@
 {
-  "name": "Transformers 4 Kids",
+  "name": "Transformers: Hero Hub",
   "description": "An interactive Transformers adventure for kids featuring bot discovery, lore, and a heroic narrator.",
   "requestFramePermissions": [
     "microphone"
   ],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
