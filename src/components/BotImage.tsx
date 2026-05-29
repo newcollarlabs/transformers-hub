@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useCachedImage } from '../hooks/useCachedImage';
 import { SEED_BOTS } from '../constants';
 import { Radio } from 'lucide-react';
@@ -12,17 +13,19 @@ interface BotImageProps {
 
 export default function BotImage({ botId, initialUrl, prompt, alt, className }: BotImageProps) {
   const { imageUrl } = useCachedImage(botId, initialUrl, prompt);
+  const [loadError, setLoadError] = useState(false);
 
   // Identify core bot information to customize the Tactical Scanner state!
   const botInfo = SEED_BOTS.find(b => b.id === botId);
   const faction = botInfo?.faction || (botId.toLowerCase().includes('decepticon') ? 'Decepticon' : 'Autobot');
   const botName = botInfo?.name || alt || botId.toUpperCase();
 
-  // Treat missing, empty or SVG fallback URLs as empty cache states to render our Premium holographic scanner
+  // Treat missing, empty, SVG or load error states as empty cache states to render our Premium holographic scanner
   const isFallback = !imageUrl || 
                      imageUrl.includes('image/svg+xml') || 
                      imageUrl.includes('PRE_EXISTING_FIRESTORE_IMAGE') ||
-                     imageUrl === '';
+                     imageUrl === '' ||
+                     loadError;
 
   if (isFallback) {
     const isAutobot = faction === 'Autobot';
@@ -79,18 +82,8 @@ export default function BotImage({ botId, initialUrl, prompt, alt, className }: 
       src={imageUrl} 
       alt={alt} 
       className={className} 
-      onError={(e) => {
-        // Handle runtime connection drops gracefully
-        (e.target as HTMLImageElement).style.display = 'none';
-        const parent = (e.target as HTMLImageElement).parentElement;
-        if (parent) {
-          parent.classList.add('flex', 'items-center', 'justify-center', 'bg-[#0d1117]');
-          parent.innerHTML = `
-            <div class="text-[9px] font-mono font-bold text-center p-2 uppercase text-white/60">
-              SYS_READ_FAIL
-            </div>
-          `;
-        }
+      onError={() => {
+        setLoadError(true);
       }}
     />
   );

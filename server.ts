@@ -115,7 +115,7 @@ async function convertUrlToBase64(imageUrl: string): Promise<string> {
   };
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12000); // 12-second retrieval timeout
+  const timeoutId = setTimeout(() => controller.abort(), 45000); // 45-second retrieval timeout for slower generation endpoints
 
   try {
     const response = await fetch(imageUrl, { headers, signal: controller.signal });
@@ -178,33 +178,38 @@ async function generateImageWithGemini(botId: string, promptText: string, factio
       }
       console.warn(`[Gemini Image] Model "${modelName}" did not return inline image data in contents.`);
     } catch (err: any) {
-      console.warn(`[Gemini Image] Model "${modelName}" failed for ${botId}:`, err.message || err);
+      const brief = err.message ? String(err.message).substring(0, 80) : "rate limited / restricted";
+      console.log(`[Gemini Image] Model "${modelName}" note for ${botId}: ${brief}`);
     }
   }
 
-  // Final Imagen-3 fallback approach if the credential level has active access
-  try {
-    console.log(`[Imagen Fallback] Attempting legacy Imagen prompt for ${botId}...`);
-    const imagenResponse = await ai.models.generateImages({
-      model: "imagen-3.0-generate-002",
-      prompt: enhancedPrompt,
-      config: {
-        numberOfImages: 1,
-        outputMimeType: "image/jpeg",
-        aspectRatio: "1:1",
-      },
-    });
+  // Final Imagen-4 / Imagen-3 fallback approach if the credential level has active access
+  const imagenModels = ["imagen-4.0-fast-generate-001", "imagen-4.0-generate-001", "imagen-3.0-generate-002"];
+  for (const imagenModel of imagenModels) {
+    try {
+      console.log(`[Imagen Fallback] Attempting Imagen prompt with model "${imagenModel}" for ${botId}...`);
+      const imagenResponse = await ai.models.generateImages({
+        model: imagenModel,
+        prompt: enhancedPrompt,
+        config: {
+          numberOfImages: 1,
+          outputMimeType: "image/jpeg",
+          aspectRatio: "1:1",
+        },
+      });
 
-    const base64Bytes = imagenResponse.generatedImages?.[0]?.image?.imageBytes;
-    if (base64Bytes) {
-      console.log(`[Imagen Fallback] Legacy Imagen generation succeeded for ${botId}.`);
-      return `data:image/jpeg;base64,${base64Bytes}`;
+      const base64Bytes = imagenResponse.generatedImages?.[0]?.image?.imageBytes;
+      if (base64Bytes) {
+        console.log(`[Imagen Fallback] Imagen generation succeeded with "${imagenModel}" for ${botId}.`);
+        return `data:image/jpeg;base64,${base64Bytes}`;
+      }
+    } catch (imagenErr: any) {
+      const brief = imagenErr.message ? String(imagenErr.message).substring(0, 80) : "quota limit";
+      console.log(`[Imagen Fallback] Model "${imagenModel}" note for ${botId}: ${brief}`);
     }
-  } catch (imagenErr: any) {
-    console.warn(`[Imagen Fallback] Legacy Imagen failed for ${botId}:`, imagenErr.message || imagenErr);
   }
 
-  throw new Error(`All Gemini image generation pipelines exhausted or restricted for ${botId}`);
+  throw new Error(`All Gemini image generation pipelines retired or restricted for ${botId}`);
 }
 
 async function startServer() {
@@ -433,30 +438,39 @@ async function startBackgroundCaching() {
       // 4. Missing. Perform retrieval and fetch
       console.log(`[Worker] Cache warming triggered for: ${normalizedId}...`);
 
-      if (item.initialUrl && item.initialUrl.startsWith("http")) {
-        try {
-          dataUrl = await convertUrlToBase64(item.initialUrl);
-        } catch (downloadError: any) {
-          // Silently continue to next strategy
-        }
-      }
-
-      if (!dataUrl && process.env.GEMINI_API_KEY) {
+      if (process.env.GEMINI_API_KEY) {
         try {
           console.log(`[Worker] Generating image via Gemini Models for ${normalizedId}...`);
           dataUrl = await generateImageWithGemini(normalizedId, item.prompt, item.faction);
         } catch (geminiError: any) {
-          console.warn(`[Worker] Gemini background warming failed for ${normalizedId}:`, geminiError.message || geminiError);
+          console.log(`[Worker] Gemini background status for ${normalizedId}: using alternate generation strategy.`);
+        }
+      }
+
+      if (!dataUrl && item.initialUrl && item.initialUrl.startsWith("http")) {
+        try {
+          console.log(`[Worker] Falling back to remote item URL download for ${normalizedId}...`);
+          let downloadUrl = item.initialUrl;
+          if (downloadUrl.includes("image.pollinations.ai")) {
+            // Resize Pollinations images from 1280x720 to 384x384 for ultra-fast generation and perfect 1:1 fit!
+            downloadUrl = downloadUrl
+              .replace("width=1280", "width=384")
+              .replace("height=720", "height=384");
+          }
+          dataUrl = await convertUrlToBase64(downloadUrl);
+        } catch (downloadError: any) {
+          console.log(`[Worker] Remote download did not complete for ${normalizedId} (will try fallback).`);
         }
       }
 
       if (!dataUrl) {
         try {
+          console.log(`[Worker] Falling back to Pollinations generation for ${normalizedId}...`);
           const queryStyle = "vibrant animated Saturday morning cartoon illustration, G1 Transformers, rich cel-shaded vector, pure white background";
-          const targetUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(item.prompt + ", " + queryStyle)}?width=768&height=768&nologo=true`;
+          const targetUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(item.prompt + ", " + queryStyle)}?width=384&height=384&nologo=true`;
           dataUrl = await convertUrlToBase64(targetUrl);
         } catch (pollinationsError: any) {
-          // Silently continue to next strategy
+          console.log(`[Worker] Fallback Pollinations note for ${normalizedId}: offline or delayed.`);
         }
       }
 
@@ -478,10 +492,10 @@ async function startBackgroundCaching() {
       cachingStatus.countWarm = countWarm;
       cachingStatus.countCached = countCached;
 
-      // Add a 1000ms delay to spread CPU load and throttle public APIs
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Add a 3000ms delay to respect Gemini and public rate-limits
+      await new Promise(resolve => setTimeout(resolve, 3000));
     } catch (err: any) {
-      console.error(`[Worker] Error warming ${item.id}:`, err.message || err);
+      console.log(`[Worker] Note warming ${item.id}:`, err.message || err);
       cachingStatus.processedItems++;
     }
   }
