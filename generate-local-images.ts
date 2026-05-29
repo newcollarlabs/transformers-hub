@@ -26,6 +26,7 @@ function normalizeId(id: string): string {
   if (result.startsWith("lore-")) {
     result = result.substring(5);
   }
+  result = result.replace(/\s+/g, "-");
   return result;
 }
 
